@@ -1,0 +1,1549 @@
+/* ==========================================================================
+ *  Seqo — a macOS Sequoia theme for Bootstrap 5.3
+ *  Toggle dark mode by setting <html data-bs-theme="dark">, same as Bootstrap.
+ *  ========================================================================== */
+/* --------------------------------------------------------------------------
+ *  1. DESIGN TOKENS
+ *  These stay as native CSS custom properties (not Stylus variables) on
+ *  purpose: Stylus variables are resolved once at compile time, but custom
+ *  properties can change live when [data-bs-theme="dark"] is toggled at
+ *  runtime — that's what makes one compiled stylesheet support both themes.
+ *  -------------------------------------------------------------------------- */
+:root {
+    /* Accent palette — Apple system colors (light) */
+    --seqo-blue: #007aff;
+    --seqo-blue-hover: #0062cc;
+    --seqo-blue-active: #0055b3;
+    --seqo-blue-subtle: rgba(0,122,255,0.1);
+    --seqo-green: #34c759;
+    --seqo-green-subtle: rgba(52,199,89,0.12);
+    --seqo-red: #ff3b30;
+    --seqo-red-subtle: rgba(255,59,48,0.1);
+    --seqo-orange: #ff9500;
+    --seqo-orange-subtle: rgba(255,149,0,0.1);
+    --seqo-yellow: #fc0;
+    --seqo-yellow-subtle: rgba(255,204,0,0.12);
+    --seqo-purple: #af52de;
+    --seqo-purple-subtle: rgba(175,82,222,0.1);
+    --seqo-pink: #ff2d55;
+    --seqo-pink-subtle: rgba(255,45,85,0.1);
+    --seqo-teal: #5ac8fa;
+    --seqo-teal-subtle: rgba(90,200,250,0.1);
+    --seqo-indigo: #5856d6;
+    --seqo-indigo-subtle: rgba(88,86,214,0.1);
+    --seqo-cyan: #32ade6;
+    --seqo-cyan-subtle: rgba(50,173,230,0.1);
+    --seqo-mint: #00c7be;
+    --seqo-mint-subtle: rgba(0,199,190,0.1);
+    /* Added: mapped Bootstrap contextual colors not in the original token set */
+    --seqo-secondary: #8e8e93;
+    --seqo-secondary-subtle: rgba(142,142,147,0.12);
+    --seqo-light: #f5f5f7;
+    --seqo-light-subtle: rgba(245,245,247,0.6);
+    --seqo-dark: #1d1d1f;
+    --seqo-dark-subtle: rgba(29,29,31,0.08);
+    /* Neutral palette — warm Sequoia grays */
+    --seqo-bg: #f5f5f7;
+    --seqo-bg-elevated: #fff;
+    --seqo-bg-sidebar: rgba(245,245,247,0.72);
+    --seqo-bg-glass: rgba(255,255,255,0.65);
+    --seqo-bg-glass-heavy: rgba(255,255,255,0.82);
+    --seqo-bg-hover: rgba(0,0,0,0.04);
+    --seqo-bg-active: rgba(0,0,0,0.08);
+    --seqo-bg-selected: rgba(0,122,255,0.12);
+    /* Text */
+    --seqo-text-primary: #1d1d1f;
+    /* FIX: was #fbfbfb (near-white) in the source tokens — invisible on
+     *    --seqo-bg (#F5F5F7). Secondary text needs a mid gray in light mode. */
+    --seqo-text-secondary: #6e6e73;
+    --seqo-text-tertiary: #aeaeb2;
+    --seqo-text-on-accent: #fff;
+    --seqo-text-link: var(--seqo-blue);
+    /* Borders */
+    --seqo-border: rgba(0,0,0,0.08);
+    --seqo-border-strong: rgba(0,0,0,0.15);
+    --seqo-divider: rgba(60,60,67,0.12);
+    /* Radii — Sequoia uses consistent, generous rounding */
+    --seqo-radius-xs: 4px;
+    --seqo-radius-sm: 6px;
+    --seqo-radius-md: 10px;
+    --seqo-radius-lg: 14px;
+    --seqo-radius-xl: 20px;
+    --seqo-radius-2xl: 26px;
+    --seqo-radius-full: 9999px;
+    /* Shadows — ultra-soft, multi-layer */
+    --seqo-shadow-xs: 0 0.5px 1px rgba(0,0,0,0.06);
+    --seqo-shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --seqo-shadow-md: 0 2px 8px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    --seqo-shadow-lg: 0 4px 12px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.06);
+    --seqo-shadow-xl: 0 8px 24px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.06);
+    --seqo-shadow-float: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+    /* Glass blur values */
+    --seqo-blur: blur(40px) saturate(180%);
+    --seqo-blur-light: blur(24px) saturate(160%);
+    --seqo-blur-heavy: blur(60px) saturate(200%);
+    /* Transitions */
+    --seqo-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --seqo-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --seqo-duration-fast: 120ms;
+    --seqo-duration-normal: 200ms;
+    --seqo-duration-slow: 350ms;
+    /* Typography */
+    --seqo-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    --seqo-font-mono: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, "Cascadia Code", monospace;
+    --seqo-font-size-xs: 0.6875rem; /* 11px */
+    --seqo-font-size-sm: 0.8125rem; /* 13px */
+    --seqo-font-size-base: 0.9375rem; /* 15px */
+    --seqo-font-size-lg: 1.0625rem; /* 17px */
+    --seqo-font-size-xl: 1.25rem; /* 20px */
+    --seqo-line-height: 1.47;
+    /* Bootstrap variable bridges — lets .btn-primary etc. keep working
+     *    without hunting down every bootstrap.css rule that reads these */
+    --bs-body-font-family: var(--seqo-font);
+    --bs-body-font-size: var(--seqo-font-size-base);
+    --bs-body-color: var(--seqo-text-primary);
+    --bs-body-bg: var(--seqo-bg);
+    --bs-border-color: var(--seqo-border);
+    --bs-border-radius: var(--seqo-radius-md);
+    --bs-border-radius-sm: var(--seqo-radius-sm);
+    --bs-border-radius-lg: var(--seqo-radius-lg);
+    --bs-link-color: var(--seqo-blue);
+    --bs-link-hover-color: var(--seqo-blue-hover);
+}
+/* --- DARK MODE TOKENS --- */
+[data-bs-theme="dark"] {
+    /* FIX: source tokens had --seqo-blue as green (#198553) and
+     *    --seqo-blue-hover as near-white (#eeffee) in dark mode — almost
+     *    certainly a paste error, since every other accent kept its hue
+     *    between light/dark. Restored to Apple's dark-mode system blue. */
+    --seqo-blue: #0a84ff;
+    --seqo-blue-hover: #409cff;
+    --seqo-blue-active: #0071e3;
+    --seqo-blue-subtle: rgba(10,132,255,0.18);
+    --seqo-green: #30d158;
+    --seqo-green-subtle: rgba(48,209,88,0.16);
+    --seqo-red: #ff453a;
+    --seqo-red-subtle: rgba(255,69,58,0.16);
+    --seqo-orange: #ff9f0a;
+    --seqo-orange-subtle: rgba(255,159,10,0.16);
+    --seqo-yellow: #ffd60a;
+    --seqo-yellow-subtle: rgba(255,214,10,0.14);
+    --seqo-purple: #bf5af2;
+    --seqo-purple-subtle: rgba(191,90,242,0.16);
+    --seqo-pink: #ff375f;
+    --seqo-pink-subtle: rgba(255,55,95,0.16);
+    --seqo-teal: #64d2ff;
+    --seqo-teal-subtle: rgba(100,210,255,0.16);
+    --seqo-indigo: #7d7aff;
+    --seqo-indigo-subtle: rgba(125,122,255,0.16);
+    --seqo-cyan: #64d2ff;
+    --seqo-cyan-subtle: rgba(100,210,255,0.16);
+    --seqo-mint: #63e6e2;
+    --seqo-mint-subtle: rgba(99,230,226,0.16);
+    --seqo-secondary: #98989d;
+    --seqo-secondary-subtle: rgba(152,152,157,0.18);
+    --seqo-light: #2c2c2e;
+    --seqo-light-subtle: rgba(44,44,46,0.6);
+    --seqo-dark: #f5f5f7;
+    --seqo-dark-subtle: rgba(245,245,247,0.1);
+    --seqo-bg: #000;
+    --seqo-bg-elevated: #1c1c1e;
+    --seqo-bg-sidebar: rgba(28,28,30,0.78);
+    --seqo-bg-glass: rgba(30,30,30,0.6);
+    --seqo-bg-glass-heavy: rgba(44,44,46,0.8);
+    --seqo-bg-hover: rgba(255,255,255,0.06);
+    --seqo-bg-active: rgba(255,255,255,0.1);
+    --seqo-bg-selected: rgba(10,132,255,0.22);
+    --seqo-text-primary: #f5f5f7;
+    --seqo-text-secondary: #98989d;
+    --seqo-text-tertiary: #636366;
+    --seqo-border: rgba(255,255,255,0.08);
+    --seqo-border-strong: rgba(255,255,255,0.18);
+    --seqo-divider: rgba(84,84,88,0.36);
+    --seqo-shadow-xs: 0 0.5px 1px rgba(0,0,0,0.3);
+    --seqo-shadow-sm: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+    --seqo-shadow-md: 0 2px 8px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+    --seqo-shadow-lg: 0 4px 12px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.25);
+    --seqo-shadow-xl: 0 8px 24px rgba(0,0,0,0.35), 0 16px 48px rgba(0,0,0,0.25);
+    --seqo-shadow-float: 0 12px 40px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.3);
+}
+/* --------------------------------------------------------------------------
+ *  2. STYLUS-SIDE HELPERS
+ *  -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+ *  3. GLOBAL RESET & SCROLLBARS
+ *  -------------------------------------------------------------------------- */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+body {
+    font-family: var(--seqo-font);
+    font-size: var(--seqo-font-size-base);
+    line-height: var(--seqo-line-height);
+    color: var(--seqo-text-primary);
+    background: var(--seqo-bg);
+    transition: background-color var(--seqo-duration-normal) var(--seqo-ease), color var(--seqo-duration-normal) var(--seqo-ease);
+}
+a {
+    color: var(--seqo-text-link);
+    text-decoration: none;
+    transition: color var(--seqo-duration-fast) var(--seqo-ease);
+}
+a:hover {
+    color: color-mix(in srgb, var(--seqo-blue) 85%, #000);
+    text-decoration: none;
+}
+::selection {
+    background: var(--seqo-bg-selected);
+}
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--seqo-border-strong);
+    border-radius: var(--seqo-radius-full);
+    border: 3px solid transparent;
+    background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--seqo-text-tertiary);
+    background-clip: padding-box;
+}
+:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--seqo-blue) 25%, transparent);
+    border-radius: var(--seqo-radius-sm);
+}
+hr {
+    border: none;
+    border-top: 1px solid var(--seqo-divider);
+    opacity: 1;
+}
+code,
+kbd,
+pre,
+samp {
+    font-family: var(--seqo-font-mono);
+}
+/* --------------------------------------------------------------------------
+ *  4. TYPOGRAPHY
+ *  -------------------------------------------------------------------------- */
+.display-1,
+.display-2,
+.display-3,
+.display-4,
+.display-5,
+.display-6 {
+    font-family: var(--seqo-font);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--seqo-text-primary);
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: var(--seqo-font);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--seqo-text-primary);
+}
+.lead {
+    font-weight: 400;
+    color: var(--seqo-text-secondary);
+}
+mark,
+.mark {
+    background: var(--seqo-yellow-subtle);
+    color: var(--seqo-text-primary);
+    border-radius: var(--seqo-radius-xs);
+    padding: 0.1em 0.3em;
+}
+blockquote {
+    border-left: 3px solid var(--seqo-blue);
+    padding-left: 1rem;
+    color: var(--seqo-text-secondary);
+}
+blockquote footer {
+    color: var(--seqo-text-tertiary);
+}
+/* --------------------------------------------------------------------------
+ *  5. TABLES
+ *  -------------------------------------------------------------------------- */
+.table {
+    color: var(--seqo-text-primary);
+    border-color: var(--seqo-divider);
+    --bs-table-bg: transparent;
+}
+.table > :not(caption) > * > * {
+    padding: 0.65rem 0.9rem;
+}
+.table thead th {
+    font-weight: 600;
+    font-size: var(--seqo-font-size-sm);
+    color: var(--seqo-text-secondary);
+    text-transform: none;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--seqo-divider);
+}
+.table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: var(--seqo-bg-hover);
+    color: var(--seqo-text-primary);
+}
+.table.table-hover > tbody > tr:hover > * {
+    background-color: var(--seqo-bg-active);
+}
+.table.table-bordered {
+    border: 1px solid var(--seqo-divider);
+}
+.table.table-bordered th,
+.table.table-bordered td {
+    border-color: var(--seqo-divider);
+}
+.table.table-primary,
+.table > .table-primary {
+    --bs-table-bg: color-mix(in srgb, var(--seqo-blue) 12%, transparent);
+    --bs-table-color: var(--seqo-text-primary);
+}
+.table.table-secondary,
+.table > .table-secondary {
+    --bs-table-bg: color-mix(in srgb, var(--seqo-secondary) 12%, transparent);
+    --bs-table-color: var(--seqo-text-primary);
+}
+.table.table-success,
+.table > .table-success {
+    --bs-table-bg: color-mix(in srgb, var(--seqo-green) 12%, transparent);
+    --bs-table-color: var(--seqo-text-primary);
+}
+.table.table-danger,
+.table > .table-danger {
+    --bs-table-bg: color-mix(in srgb, var(--seqo-red) 12%, transparent);
+    --bs-table-color: var(--seqo-text-primary);
+}
+.table.table-warning,
+.table > .table-warning {
+    --bs-table-bg: color-mix(in srgb, var(--seqo-orange) 12%, transparent);
+    --bs-table-color: var(--seqo-text-primary);
+}
+.table.table-info,
+.table > .table-info {
+    --bs-table-bg: color-mix(in srgb, var(--seqo-teal) 12%, transparent);
+    --bs-table-color: var(--seqo-text-primary);
+}
+.table.table-light,
+.table > .table-light {
+    --bs-table-bg: color-mix(in srgb, var(--seqo-light) 12%, transparent);
+    --bs-table-color: var(--seqo-text-primary);
+}
+.table.table-dark,
+.table > .table-dark {
+    --bs-table-bg: color-mix(in srgb, var(--seqo-dark) 12%, transparent);
+    --bs-table-color: var(--seqo-text-primary);
+}
+/* --------------------------------------------------------------------------
+ *  6. FORMS
+ *  -------------------------------------------------------------------------- */
+.form-label {
+    font-size: var(--seqo-font-size-sm);
+    font-weight: 500;
+    color: var(--seqo-text-secondary);
+    margin-bottom: 0.35rem;
+}
+.form-control,
+.form-select {
+    font-family: var(--seqo-font);
+    font-size: var(--seqo-font-size-base);
+    color: var(--seqo-text-primary);
+    background-color: var(--seqo-bg-elevated);
+    border: 1px solid var(--seqo-border-strong);
+    border-radius: var(--seqo-radius-md);
+    padding: 0.5rem 0.85rem;
+    box-shadow: var(--seqo-shadow-xs);
+    transition: border-color var(--seqo-duration-fast) var(--seqo-ease), box-shadow var(--seqo-duration-fast) var(--seqo-ease);
+}
+.form-control::placeholder,
+.form-select::placeholder {
+    color: var(--seqo-text-tertiary);
+}
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--seqo-bg-elevated);
+    border-color: var(--seqo-blue);
+    color: var(--seqo-text-primary);
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--seqo-blue) 25%, transparent);
+}
+.form-control:disabled,
+.form-select:disabled,
+.form-control[readonly],
+.form-select[readonly] {
+    background-color: var(--seqo-bg-hover);
+    color: var(--seqo-text-tertiary);
+    opacity: 1;
+}
+.form-control.is-valid,
+.form-select.is-valid {
+    border-color: var(--seqo-green);
+}
+.form-control.is-valid:focus,
+.form-select.is-valid:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--seqo-green) 25%, transparent);
+}
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: var(--seqo-red);
+}
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--seqo-red) 25%, transparent);
+}
+.form-control-sm,
+.form-select-sm {
+    border-radius: var(--seqo-radius-sm);
+    padding: 0.3rem 0.65rem;
+    font-size: var(--seqo-font-size-sm);
+}
+.form-control-lg,
+.form-select-lg {
+    border-radius: var(--seqo-radius-lg);
+    padding: 0.7rem 1rem;
+    font-size: var(--seqo-font-size-lg);
+}
+.form-text {
+    color: var(--seqo-text-tertiary);
+    font-size: var(--seqo-font-size-sm);
+}
+.valid-feedback {
+    color: var(--seqo-green);
+}
+.invalid-feedback {
+    color: var(--seqo-red);
+}
+.form-check-input {
+    width: 1.1em;
+    height: 1.1em;
+    margin-top: 0.2em;
+    background-color: var(--seqo-bg-elevated);
+    border: 1.5px solid var(--seqo-border-strong);
+}
+.form-check-input[type="checkbox"] {
+    border-radius: 0.3em;
+}
+.form-check-input:checked {
+    background-color: var(--seqo-blue);
+    border-color: var(--seqo-blue);
+}
+.form-check-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--seqo-blue) 25%, transparent);
+    border-color: var(--seqo-blue);
+}
+.form-switch .form-check-input {
+    width: 2.4em;
+    height: 1.3em;
+    border-radius: var(--seqo-radius-full);
+    background-color: var(--seqo-border-strong);
+    border: none;
+}
+.form-switch .form-check-input:checked {
+    background-color: var(--seqo-green);
+}
+.form-range::-webkit-slider-thumb {
+    background: var(--seqo-blue);
+    box-shadow: var(--seqo-shadow-sm);
+}
+.form-range::-webkit-slider-runnable-track {
+    background: var(--seqo-border-strong);
+    border-radius: var(--seqo-radius-full);
+}
+.input-group-text {
+    background-color: var(--seqo-bg-hover);
+    border: 1px solid var(--seqo-border-strong);
+    color: var(--seqo-text-secondary);
+}
+.form-floating > label {
+    color: var(--seqo-text-tertiary);
+}
+/* --------------------------------------------------------------------------
+ *  7. BUTTONS
+ *  -------------------------------------------------------------------------- */
+.btn {
+    font-family: var(--seqo-font);
+    font-weight: 500;
+    font-size: var(--seqo-font-size-base);
+/*     padding: 0.5rem 1.1rem; */
+    border-radius: var(--seqo-radius-md);
+    border: 1px solid transparent;
+    transition: filter var(--seqo-duration-fast) var(--seqo-ease), transform var(--seqo-duration-fast) var(--seqo-ease-spring), box-shadow var(--seqo-duration-fast) var(--seqo-ease);
+}
+.btn:active {
+    transform: scale(0.97);
+}
+.btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--seqo-blue) 25%, transparent);
+}
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.4;
+    filter: none;
+    transform: none;
+}
+.btn-sm {
+    border-radius: var(--seqo-radius-sm);
+    padding: 0.3rem 0.75rem;
+    font-size: var(--seqo-font-size-sm);
+}
+.btn-lg {
+    border-radius: var(--seqo-radius-lg);
+    padding: 0.7rem 1.4rem;
+    font-size: var(--seqo-font-size-lg);
+}
+.btn-primary {
+    background-color: var(--seqo-blue);
+    border-color: var(--seqo-blue);
+    color: var(--seqo-text-on-accent);
+    box-shadow: var(--seqo-shadow-sm);
+}
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--seqo-blue);
+    border-color: var(--seqo-blue);
+    filter: brightness(0.94);
+    color: var(--seqo-text-on-accent);
+}
+.btn-primary:active {
+    filter: brightness(0.88);
+}
+.btn-outline-primary {
+    background-color: transparent;
+    border-color: var(--seqo-blue);
+    color: var(--seqo-blue);
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: color-mix(in srgb, var(--seqo-blue) 12%, transparent);
+    border-color: var(--seqo-blue);
+    color: var(--seqo-blue);
+}
+.btn-outline-primary:active {
+    background-color: color-mix(in srgb, var(--seqo-blue) 20%, transparent);
+}
+.btn-secondary {
+    background-color: var(--seqo-secondary);
+    border-color: var(--seqo-secondary);
+    color: var(--seqo-text-on-accent);
+    box-shadow: var(--seqo-shadow-sm);
+}
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background-color: var(--seqo-secondary);
+    border-color: var(--seqo-secondary);
+    filter: brightness(0.94);
+    color: var(--seqo-text-on-accent);
+}
+.btn-secondary:active {
+    filter: brightness(0.88);
+}
+.btn-outline-secondary {
+    background-color: transparent;
+    border-color: var(--seqo-secondary);
+    color: var(--seqo-secondary);
+}
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    background-color: color-mix(in srgb, var(--seqo-secondary) 12%, transparent);
+    border-color: var(--seqo-secondary);
+    color: var(--seqo-secondary);
+}
+.btn-outline-secondary:active {
+    background-color: color-mix(in srgb, var(--seqo-secondary) 20%, transparent);
+}
+.btn-success {
+    background-color: var(--seqo-green);
+    border-color: var(--seqo-green);
+    color: var(--seqo-text-on-accent);
+    box-shadow: var(--seqo-shadow-sm);
+}
+.btn-success:hover,
+.btn-success:focus {
+    background-color: var(--seqo-green);
+    border-color: var(--seqo-green);
+    filter: brightness(0.94);
+    color: var(--seqo-text-on-accent);
+}
+.btn-success:active {
+    filter: brightness(0.88);
+}
+.btn-outline-success {
+    background-color: transparent;
+/*     border-color: var(--seqo-green); */
+    color: var(--seqo-green);
+}
+.btn-outline-success:hover,
+.btn-outline-success:focus {
+    background-color: color-mix(in srgb, var(--seqo-green) 12%, transparent);
+    border-color: var(--seqo-green);
+    color: var(--seqo-green);
+}
+.btn-outline-success:active {
+    background-color: color-mix(in srgb, var(--seqo-green) 20%, transparent);
+}
+.btn-danger {
+    background-color: var(--seqo-red);
+    border-color: var(--seqo-red);
+    color: var(--seqo-text-on-accent);
+    box-shadow: var(--seqo-shadow-sm);
+}
+.btn-danger:hover,
+.btn-danger:focus {
+    background-color: var(--seqo-red);
+    border-color: var(--seqo-red);
+    filter: brightness(0.94);
+    color: var(--seqo-text-on-accent);
+}
+.btn-danger:active {
+    filter: brightness(0.88);
+}
+.btn-outline-danger {
+    background-color: transparent;
+    border-color: var(--seqo-red);
+    color: var(--seqo-red);
+}
+.btn-outline-danger:hover,
+.btn-outline-danger:focus {
+    background-color: color-mix(in srgb, var(--seqo-red) 12%, transparent);
+    border-color: var(--seqo-red);
+    color: var(--seqo-red);
+}
+.btn-outline-danger:active {
+    background-color: color-mix(in srgb, var(--seqo-red) 20%, transparent);
+}
+.btn-warning {
+    background-color: var(--seqo-orange);
+    border-color: var(--seqo-orange);
+    color: var(--seqo-text-on-accent);
+    box-shadow: var(--seqo-shadow-sm);
+}
+.btn-warning:hover,
+.btn-warning:focus {
+    background-color: var(--seqo-orange);
+    border-color: var(--seqo-orange);
+    filter: brightness(0.94);
+    color: var(--seqo-text-on-accent);
+}
+.btn-warning:active {
+    filter: brightness(0.88);
+}
+.btn-outline-warning {
+    background-color: transparent;
+    border-color: var(--seqo-orange);
+    color: var(--seqo-orange);
+}
+.btn-outline-warning:hover,
+.btn-outline-warning:focus {
+    background-color: color-mix(in srgb, var(--seqo-orange) 12%, transparent);
+    border-color: var(--seqo-orange);
+    color: var(--seqo-orange);
+}
+.btn-outline-warning:active {
+    background-color: color-mix(in srgb, var(--seqo-orange) 20%, transparent);
+}
+.btn-info {
+    background-color: var(--seqo-teal);
+    border-color: var(--seqo-teal);
+    color: var(--seqo-text-on-accent);
+    box-shadow: var(--seqo-shadow-sm);
+}
+.btn-info:hover,
+.btn-info:focus {
+    background-color: var(--seqo-teal);
+    border-color: var(--seqo-teal);
+    filter: brightness(0.94);
+    color: var(--seqo-text-on-accent);
+}
+.btn-info:active {
+    filter: brightness(0.88);
+}
+.btn-outline-info {
+    background-color: transparent;
+    border-color: var(--seqo-teal);
+    color: var(--seqo-teal);
+}
+.btn-outline-info:hover,
+.btn-outline-info:focus {
+    background-color: color-mix(in srgb, var(--seqo-teal) 12%, transparent);
+    border-color: var(--seqo-teal);
+    color: var(--seqo-teal);
+}
+.btn-outline-info:active {
+    background-color: color-mix(in srgb, var(--seqo-teal) 20%, transparent);
+}
+.btn-light {
+    background-color: var(--seqo-light);
+    border-color: var(--seqo-light);
+    color: var(--seqo-text-on-accent);
+    box-shadow: var(--seqo-shadow-sm);
+}
+.btn-light:hover,
+.btn-light:focus {
+    background-color: var(--seqo-light);
+    border-color: var(--seqo-light);
+    filter: brightness(0.94);
+    color: var(--seqo-text-on-accent);
+}
+.btn-light:active {
+    filter: brightness(0.88);
+}
+.btn-outline-light {
+    background-color: transparent;
+    border-color: var(--seqo-light);
+    color: var(--seqo-light);
+}
+.btn-outline-light:hover,
+.btn-outline-light:focus {
+    background-color: color-mix(in srgb, var(--seqo-light) 12%, transparent);
+    border-color: var(--seqo-light);
+    color: var(--seqo-light);
+}
+.btn-outline-light:active {
+    background-color: color-mix(in srgb, var(--seqo-light) 20%, transparent);
+}
+.btn-dark {
+    background-color: var(--seqo-dark);
+    border-color: var(--seqo-dark);
+    color: var(--seqo-text-on-accent);
+    box-shadow: var(--seqo-shadow-sm);
+}
+.btn-dark:hover,
+.btn-dark:focus {
+    background-color: var(--seqo-dark);
+    border-color: var(--seqo-dark);
+    filter: brightness(0.94);
+    color: var(--seqo-text-on-accent);
+}
+.btn-dark:active {
+    filter: brightness(0.88);
+}
+.btn-outline-dark {
+    background-color: transparent;
+    border-color: var(--seqo-dark);
+    color: var(--seqo-dark);
+}
+.btn-outline-dark:hover,
+.btn-outline-dark:focus {
+    background-color: color-mix(in srgb, var(--seqo-dark) 12%, transparent);
+    border-color: var(--seqo-dark);
+    color: var(--seqo-dark);
+}
+.btn-outline-dark:active {
+    background-color: color-mix(in srgb, var(--seqo-dark) 20%, transparent);
+}
+.btn-link {
+    color: var(--seqo-blue);
+    text-decoration: none;
+    box-shadow: none;
+}
+.btn-link:hover {
+    color: color-mix(in srgb, var(--seqo-blue) 85%, #000);
+    text-decoration: underline;
+}
+.btn-group > .btn,
+.btn-group-vertical > .btn {
+    box-shadow: none;
+}
+.btn-group > .btn:not(:first-child),
+.btn-group-vertical > .btn:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.btn-group > .btn:not(:last-child),
+.btn-group-vertical > .btn:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+/* --------------------------------------------------------------------------
+ *  8. ACCORDION
+ *  -------------------------------------------------------------------------- */
+.accordion-item {
+    background-color: var(--seqo-bg-elevated);
+    border: 1px solid var(--seqo-border);
+    border-radius: var(--seqo-radius-lg) !important;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+.accordion-button {
+    font-weight: 500;
+    background-color: transparent;
+    color: var(--seqo-text-primary);
+}
+.accordion-button:not(.collapsed) {
+    background-color: var(--seqo-blue-subtle);
+    color: var(--seqo-blue);
+    box-shadow: none;
+}
+.accordion-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--seqo-blue) 25%, transparent);
+}
+.accordion-button::after {
+    filter: none;
+}
+.accordion-body {
+    color: var(--seqo-text-secondary);
+}
+/* --------------------------------------------------------------------------
+ *  9. ALERTS
+ *  -------------------------------------------------------------------------- */
+.alert {
+    border: 1px solid transparent;
+    border-radius: var(--seqo-radius-md);
+    font-size: var(--seqo-font-size-base);
+}
+.alert-primary {
+    background-color: color-mix(in srgb, var(--seqo-blue) 12%, transparent);
+    color: var(--seqo-blue);
+    border-color: color-mix(in srgb, var(--seqo-blue) 24%, transparent);
+}
+.alert-primary .alert-link {
+    color: var(--seqo-blue);
+    font-weight: 600;
+}
+.alert-secondary {
+    background-color: color-mix(in srgb, var(--seqo-secondary) 12%, transparent);
+    color: var(--seqo-secondary);
+    border-color: color-mix(in srgb, var(--seqo-secondary) 24%, transparent);
+}
+.alert-secondary .alert-link {
+    color: var(--seqo-secondary);
+    font-weight: 600;
+}
+.alert-success {
+    background-color: color-mix(in srgb, var(--seqo-green) 12%, transparent);
+    color: var(--seqo-green);
+    border-color: color-mix(in srgb, var(--seqo-green) 24%, transparent);
+}
+.alert-success .alert-link {
+    color: var(--seqo-green);
+    font-weight: 600;
+}
+.alert-danger {
+    background-color: color-mix(in srgb, var(--seqo-red) 12%, transparent);
+    color: var(--seqo-red);
+    border-color: color-mix(in srgb, var(--seqo-red) 24%, transparent);
+}
+.alert-danger .alert-link {
+    color: var(--seqo-red);
+    font-weight: 600;
+}
+.alert-warning {
+    background-color: color-mix(in srgb, var(--seqo-orange) 12%, transparent);
+    color: var(--seqo-orange);
+    border-color: color-mix(in srgb, var(--seqo-orange) 24%, transparent);
+}
+.alert-warning .alert-link {
+    color: var(--seqo-orange);
+    font-weight: 600;
+}
+.alert-info {
+    background-color: color-mix(in srgb, var(--seqo-teal) 12%, transparent);
+    color: var(--seqo-teal);
+    border-color: color-mix(in srgb, var(--seqo-teal) 24%, transparent);
+}
+.alert-info .alert-link {
+    color: var(--seqo-teal);
+    font-weight: 600;
+}
+.alert-light {
+    background-color: color-mix(in srgb, var(--seqo-light) 12%, transparent);
+    color: var(--seqo-light);
+    border-color: color-mix(in srgb, var(--seqo-light) 24%, transparent);
+}
+.alert-light .alert-link {
+    color: var(--seqo-light);
+    font-weight: 600;
+}
+.alert-dark {
+    background-color: color-mix(in srgb, var(--seqo-dark) 12%, transparent);
+    color: var(--seqo-dark);
+    border-color: color-mix(in srgb, var(--seqo-dark) 24%, transparent);
+}
+.alert-dark .alert-link {
+    color: var(--seqo-dark);
+    font-weight: 600;
+}
+/* --------------------------------------------------------------------------
+ *  10. BADGES
+ *  -------------------------------------------------------------------------- */
+.badge {
+    font-weight: 600;
+    font-size: var(--seqo-font-size-xs);
+    border-radius: var(--seqo-radius-full);
+    padding: 0.35em 0.65em;
+}
+.badge.text-bg-primary,
+.badge.bg-primary {
+    background-color: var(--seqo-blue) !important;
+    color: var(--seqo-text-on-accent) !important;
+}
+.badge.text-bg-secondary,
+.badge.bg-secondary {
+    background-color: var(--seqo-secondary) !important;
+    color: var(--seqo-text-on-accent) !important;
+}
+.badge.text-bg-success,
+.badge.bg-success {
+    background-color: var(--seqo-green) !important;
+    color: var(--seqo-text-on-accent) !important;
+}
+.badge.text-bg-danger,
+.badge.bg-danger {
+    background-color: var(--seqo-red) !important;
+    color: var(--seqo-text-on-accent) !important;
+}
+.badge.text-bg-warning,
+.badge.bg-warning {
+    background-color: var(--seqo-orange) !important;
+    color: var(--seqo-text-on-accent) !important;
+}
+.badge.text-bg-info,
+.badge.bg-info {
+    background-color: var(--seqo-teal) !important;
+    color: var(--seqo-text-on-accent) !important;
+}
+.badge.text-bg-light,
+.badge.bg-light {
+    background-color: var(--seqo-light) !important;
+    color: var(--seqo-text-on-accent) !important;
+}
+.badge.text-bg-dark,
+.badge.bg-dark {
+    background-color: var(--seqo-dark) !important;
+    color: var(--seqo-text-on-accent) !important;
+}
+/* --------------------------------------------------------------------------
+ *  11. BREADCRUMB
+ *  -------------------------------------------------------------------------- */
+.breadcrumb {
+    font-size: var(--seqo-font-size-sm);
+}
+.breadcrumb-item {
+    color: var(--seqo-text-tertiary);
+}
+.breadcrumb-item a {
+    color: var(--seqo-text-secondary);
+}
+.breadcrumb-item.active {
+    color: var(--seqo-text-primary);
+}
+.breadcrumb-item + .breadcrumb-item::before {
+    color: var(--seqo-text-tertiary);
+}
+/* --------------------------------------------------------------------------
+ *  12. CARD
+ *  -------------------------------------------------------------------------- */
+.card {
+    background-color: var(--seqo-bg-elevated);
+    border: 1px solid var(--seqo-border);
+    border-radius: var(--seqo-radius-xl);
+    box-shadow: var(--seqo-shadow-md);
+    transition: box-shadow var(--seqo-duration-normal) var(--seqo-ease), transform var(--seqo-duration-normal) var(--seqo-ease);
+}
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--seqo-divider);
+    font-weight: 600;
+}
+.card-footer {
+    background-color: transparent;
+    border-top: 1px solid var(--seqo-divider);
+    color: var(--seqo-text-tertiary);
+}
+.card-title {
+    color: var(--seqo-text-primary);
+}
+.card-text {
+    color: var(--seqo-text-secondary);
+}
+.card-img-top {
+    border-top-left-radius: var(--seqo-radius-xl);
+    border-top-right-radius: var(--seqo-radius-xl);
+}
+.card-mac-titlebar .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.6rem 0.9rem;
+}
+.card-mac-titlebar .card-header::before {
+    content: "";
+    display: inline-flex;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ff5f57;
+    box-shadow: 18px 0 0 #febc2e, 36px 0 0 #28c840;
+    margin-right: 44px;
+}
+/* --------------------------------------------------------------------------
+ *  13. CAROUSEL
+ *  -------------------------------------------------------------------------- */
+.carousel-indicators [data-bs-target] {
+    background-color: rgba(255,255,255,0.6);
+}
+.carousel-indicators [data-bs-target].active {
+    background-color: #fff;
+}
+.carousel-caption {
+    background: rgba(0,0,0,0.35);
+    border-radius: var(--seqo-radius-lg);
+    padding: 1rem 1.5rem;
+}
+/* --------------------------------------------------------------------------
+ *  14. DROPDOWNS — macOS context-menu look, with real glass blur
+ *  -------------------------------------------------------------------------- */
+.dropdown-menu {
+    background-color: var(--seqo-bg-glass-heavy);
+    -webkit-backdrop-filter: var(--seqo-blur);
+    backdrop-filter: var(--seqo-blur);
+    border: 1px solid var(--seqo-border);
+    border-radius: var(--seqo-radius-lg);
+    box-shadow: var(--seqo-shadow-float);
+    padding: 0.4rem;
+}
+.dropdown-item {
+    border-radius: var(--seqo-radius-sm);
+    font-size: var(--seqo-font-size-base);
+    color: var(--seqo-text-primary);
+    padding: 0.4rem 0.7rem;
+}
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--seqo-blue);
+    color: var(--seqo-text-on-accent);
+}
+.dropdown-item.active {
+    background-color: var(--seqo-blue);
+    color: var(--seqo-text-on-accent);
+}
+.dropdown-item.disabled {
+    color: var(--seqo-text-tertiary);
+}
+.dropdown-divider {
+    border-top: 1px solid var(--seqo-divider);
+}
+.dropdown-header {
+    color: var(--seqo-text-tertiary);
+    font-size: var(--seqo-font-size-xs);
+}
+/* --------------------------------------------------------------------------
+ *  15. LIST GROUP
+ *  -------------------------------------------------------------------------- */
+.list-group-item {
+    background-color: var(--seqo-bg-elevated);
+    border-color: var(--seqo-divider);
+    color: var(--seqo-text-primary);
+}
+.list-group-item.active {
+    background-color: var(--seqo-blue);
+    border-color: var(--seqo-blue);
+    color: var(--seqo-text-on-accent);
+}
+.list-group-item.disabled {
+    color: var(--seqo-text-tertiary);
+}
+.list-group-item-action:hover {
+    background-color: var(--seqo-bg-hover);
+    color: var(--seqo-text-primary);
+}
+.list-group-item-primary {
+    background-color: color-mix(in srgb, var(--seqo-blue) 12%, transparent);
+    color: var(--seqo-blue);
+}
+.list-group-item-secondary {
+    background-color: color-mix(in srgb, var(--seqo-secondary) 12%, transparent);
+    color: var(--seqo-secondary);
+}
+.list-group-item-success {
+    background-color: color-mix(in srgb, var(--seqo-green) 12%, transparent);
+    color: var(--seqo-green);
+}
+.list-group-item-danger {
+    background-color: color-mix(in srgb, var(--seqo-red) 12%, transparent);
+    color: var(--seqo-red);
+}
+.list-group-item-warning {
+    background-color: color-mix(in srgb, var(--seqo-orange) 12%, transparent);
+    color: var(--seqo-orange);
+}
+.list-group-item-info {
+    background-color: color-mix(in srgb, var(--seqo-teal) 12%, transparent);
+    color: var(--seqo-teal);
+}
+.list-group-item-light {
+    background-color: color-mix(in srgb, var(--seqo-light) 12%, transparent);
+    color: var(--seqo-light);
+}
+.list-group-item-dark {
+    background-color: color-mix(in srgb, var(--seqo-dark) 12%, transparent);
+    color: var(--seqo-dark);
+}
+/* --------------------------------------------------------------------------
+ *  16. MODAL — glass backdrop + macOS traffic-light titlebar
+ *  -------------------------------------------------------------------------- */
+.modal-content {
+    background-color: var(--seqo-bg-glass-heavy);
+    -webkit-backdrop-filter: var(--seqo-blur-heavy);
+    backdrop-filter: var(--seqo-blur-heavy);
+    border: 1px solid var(--seqo-border);
+    border-radius: var(--seqo-radius-xl);
+    box-shadow: var(--seqo-shadow-float);
+}
+.modal-header {
+    border-bottom: 1px solid var(--seqo-divider);
+    padding: 0.9rem 1.25rem;
+}
+/*.modal-header::before {
+    content: "";
+    display: inline-flex;
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #ff5f57;
+    box-shadow: 18px 0 0 #febc2e, 36px 0 0 #28c840;
+    margin-right: 44px;
+}*/
+.modal-title {
+    font-weight: 600;
+    font-size: var(--seqo-font-size-lg);
+}
+.modal-footer {
+    border-top: 1px solid var(--seqo-divider);
+}
+.modal-backdrop {
+    background-color: #000;
+}
+.modal-backdrop.show {
+    opacity: 0.35;
+}
+/* --------------------------------------------------------------------------
+ *  17. NAVS (tabs / pills)
+ *  -------------------------------------------------------------------------- */
+.nav-tabs {
+    border-bottom: 1px solid var(--seqo-divider);
+}
+.nav-tabs .nav-link {
+    color: var(--seqo-text-secondary);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 0.6rem 0.9rem;
+}
+.nav-tabs .nav-link:hover {
+    color: var(--seqo-text-primary);
+    border-bottom-color: var(--seqo-border-strong);
+}
+.nav-tabs .nav-link.active {
+    color: var(--seqo-blue);
+    background: transparent;
+    border-bottom-color: var(--seqo-blue);
+}
+.nav-tabs .nav-link.disabled {
+    color: var(--seqo-text-tertiary);
+}
+.nav-pills .nav-link {
+    color: var(--seqo-text-secondary);
+    border-radius: var(--seqo-radius-full);
+    padding: 0.45rem 1rem;
+}
+.nav-pills .nav-link.active {
+    background-color: var(--seqo-blue);
+    color: var(--seqo-text-on-accent);
+}
+/* --------------------------------------------------------------------------
+ *  18. NAVBAR — the classic macOS translucent menu bar
+ *  -------------------------------------------------------------------------- */
+.navbar {
+    background-color: var(--seqo-bg-sidebar) !important;
+    -webkit-backdrop-filter: var(--seqo-blur);
+    backdrop-filter: var(--seqo-blur);
+    border-bottom: 1px solid var(--seqo-border);
+}
+.navbar-brand {
+    font-weight: 700;
+    color: var(--seqo-text-primary) !important;
+}
+.navbar-nav .nav-link {
+    color: var(--seqo-text-secondary) !important;
+    font-weight: 500;
+}
+.navbar-nav .nav-link:hover {
+    color: var(--seqo-text-primary) !important;
+}
+.navbar-nav .nav-link.active {
+    color: var(--seqo-blue) !important;
+}
+.navbar-toggler {
+    border: none;
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--seqo-blue) 25%, transparent);
+}
+/* --------------------------------------------------------------------------
+ *  19. PAGINATION
+ *  -------------------------------------------------------------------------- */
+.page-link {
+    color: var(--seqo-text-primary);
+    background-color: var(--seqo-bg-elevated);
+    border-color: var(--seqo-divider);
+}
+.page-link:hover {
+    background-color: var(--seqo-bg-hover);
+    color: var(--seqo-blue);
+    border-color: var(--seqo-divider);
+}
+.page-item.active .page-link {
+    background-color: var(--seqo-blue);
+    border-color: var(--seqo-blue);
+}
+.page-item.disabled .page-link {
+    color: var(--seqo-text-tertiary);
+    background-color: var(--seqo-bg-elevated);
+}
+/* --------------------------------------------------------------------------
+ *  20. POPOVERS & TOOLTIPS — dark glass "HUD" style
+ *  -------------------------------------------------------------------------- */
+.tooltip .tooltip-inner {
+    background-color: rgba(28,28,30,0.92);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    color: #fff;
+    border-radius: var(--seqo-radius-sm);
+    font-size: var(--seqo-font-size-sm);
+    padding: 0.4rem 0.7rem;
+}
+.popover {
+    background-color: var(--seqo-bg-glass-heavy);
+    -webkit-backdrop-filter: var(--seqo-blur);
+    backdrop-filter: var(--seqo-blur);
+    border: 1px solid var(--seqo-border);
+    border-radius: var(--seqo-radius-lg);
+    box-shadow: var(--seqo-shadow-lg);
+}
+.popover-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--seqo-divider);
+    font-weight: 600;
+}
+.popover-body {
+    color: var(--seqo-text-secondary);
+}
+/* --------------------------------------------------------------------------
+ *  21. PROGRESS
+ *  -------------------------------------------------------------------------- */
+.progress {
+    background-color: var(--seqo-bg-active);
+    border-radius: var(--seqo-radius-full);
+    height: 0.6rem;
+}
+.progress-bar {
+    background-color: var(--seqo-blue);
+    border-radius: var(--seqo-radius-full);
+}
+/* --------------------------------------------------------------------------
+ *  22. SPINNERS
+ *  -------------------------------------------------------------------------- */
+.spinner-border,
+.spinner-grow {
+    color: var(--seqo-blue);
+}
+/* --------------------------------------------------------------------------
+ *  23. TOASTS — macOS notification-center card
+ *  -------------------------------------------------------------------------- */
+.toast {
+    background-color: var(--seqo-bg-glass-heavy);
+    -webkit-backdrop-filter: var(--seqo-blur);
+    backdrop-filter: var(--seqo-blur);
+    border: 1px solid var(--seqo-border);
+    border-radius: var(--seqo-radius-lg);
+    box-shadow: var(--seqo-shadow-lg);
+}
+.toast-header {
+    background-color: transparent;
+    color: var(--seqo-text-secondary);
+    border-bottom: 1px solid var(--seqo-divider);
+    border-top-left-radius: var(--seqo-radius-lg);
+    border-top-right-radius: var(--seqo-radius-lg);
+}
+.toast-body {
+    color: var(--seqo-text-primary);
+}
+/* --------------------------------------------------------------------------
+ *  24. CLOSE BUTTON
+ *  -------------------------------------------------------------------------- */
+.btn-close {
+    opacity: 0.5;
+    transition: opacity var(--seqo-duration-fast) var(--seqo-ease);
+}
+.btn-close:hover {
+    opacity: 0.85;
+}
+.btn-close:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--seqo-blue) 25%, transparent);
+    opacity: 1;
+}
+
+/* ==========================================================================
+ *  ANIMATION ADD-ONS — appended manually, see comments for what each does.
+ *  Placed at the bottom of the file on purpose: CSS resolves ties between
+ *  rules of equal specificity by source order, so anything here wins over
+ *  the matching rule earlier in the file without needing !important or a
+ *  more specific selector.
+ *  ========================================================================== */
+
+/* 1. Respect reduced-motion first, so every animation below gets switched
+ *     off for people who've asked their OS to minimize motion. */
+@media (prefers-reduced-motion: reduce) {
+    .modal.fade .modal-dialog,
+    .toast,
+    .card,
+    .btn {
+        transition-duration: 0.001ms !important;
+        animation-duration: 0.001ms !important;
+    }
+}
+
+/* 2. Modal — macOS-style zoom-in instead of Bootstrap's default slide-down.
+ *     Bootstrap's modal JS already adds/removes the .show class one frame
+ *     after .fade is applied, specifically so transitions like this can run. */
+.modal.fade .modal-dialog {
+    transform: scale(0.92) translateY(10px);
+    opacity: 0;
+    transition: transform var(--seqo-duration-slow) var(--seqo-ease-spring),
+    opacity var(--seqo-duration-normal) var(--seqo-ease);
+}
+.modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+/* 3. Toast — slide in from the top-right, like Notification Center. */
+.toast.fade {
+    transform: translateX(16px);
+    opacity: 0;
+    transition: transform var(--seqo-duration-slow) var(--seqo-ease-spring),
+    opacity var(--seqo-duration-normal) var(--seqo-ease);
+}
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* 4. Card hover lift — subtle affordance for clickable cards. */
+.card {
+    will-change: transform;
+}
+.card:hover {
+    /* transform: translateY(-3px); */
+    box-shadow: var(--seqo-shadow-lg);
+}
+
+/* 5. Button hover lift, layered on top of the existing brightness()/scale()
+ *     states already defined earlier in the file. */
+/*.btn:hover {
+    transform: translateY(-1px);
+}*/
+/*.btn:active {
+    transform: translateY(0) scale(0.97);
+}*/
+
+/* 6. Dropdown menu open/close animation. Optional — this relies on
+ *     @starting-style, a newer CSS feature (Chrome 117+, Safari 17.4+,
+ *     not yet in older browsers) that lets a transition run across the
+ *     display:none -> display:block flip Bootstrap uses for dropdowns.
+ *     Bootstrap's default dropdown has no built-in "fade" delay like the
+ *     modal/toast do, so without @starting-style this can't be animated
+ *     with CSS alone. Delete this block if you need older-browser support. */
+.dropdown-menu {
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    pointer-events: auto;
+    animation: seqoDropdownIn 150ms var(--seqo-ease-spring) forwards;
+}
+/*@starting-style {
+    .dropdown-menu.show {
+        transition: opacity var(--seqo-duration-fast) var(--seqo-ease),
+        transform var(--seqo-duration-fast) var(--seqo-ease-spring),
+        display var(--seqo-duration-fast) allow-discrete;
+        opacity: 0;
+        transform: translateY(-6px) scale(0.96);
+    }
+}*/
+@keyframes seqoDropdownIn {
+    from {
+        filter: blur(4px) saturate(180%);
+        opacity: 0;
+        transform: scale(0.96) translateY(-4px);
+    }
+    to {
+        filter: blur(0px) saturate(0%);
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* EXCLUSIVE SPECIFIC LAYOUT FIXES */
+
+/* 1. Screen Blocker */
+spinner-border,.spinner-grow {
+    display: inline-block;
+    flex-shrink: 0;
+    width: var(--bs-spinner-width);
+    height: var(--bs-spinner-height);
+    vertical-align: var(--bs-spinner-vertical-align);
+    border-radius: 50%;
+    animation: var(--bs-spinner-animation-speed) ease-in-out infinite var(--bs-spinner-animation-name)
+}
+
+.spinner-border {
+    border-width: 2px;
+    color: var(--seqo-blue);
+}
+
+.spinner-grow {
+    --bs-spinner-width: 2rem;
+    --bs-spinner-height: 2rem;
+    --bs-spinner-vertical-align: -.125em;
+    --bs-spinner-animation-speed: 2s;
+    --bs-spinner-animation-name: apple-pulse;
+    background-color: currentcolor;
+    opacity: 1
+}
+
+@keyframes apple-pulse {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.25;
+    }
+
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.85);
+        opacity: 0.25;
+    }
+}
+
+.spinner-grow { background-color: var(--seqo-blue); }
+
+@keyframes apple-pulse {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.25;
+    }
+
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.85);
+        opacity: 0.25;
+    }
+}
+
+.screen-blocker {
+    z-index: 0 !important;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    max-height: 16%;
+    max-width: 12%;
+    padding: 24px;
+    z-index: 1055;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* 2. Navbar */
+#app > nav > div > b {
+filter: blur(4px);
+opacity: 0;
+}
+
+#app > nav > div > b:hover {
+transition: 1s;
+filter: blur(0px);
+opacity: 1;
+}
+
+/* 3. Toast */
+.bg-light {
+    color: var(--seqo-text-tertiary);
+}
+
+/* OTHERS */
+/* A. PENDING TASKS */
+.card.card-body.shadow-sm.text-muted.text-center.px-4.py-5.mb-4 {
+    background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia.tenor.com%2FlCKwsD2OW1kAAAAi%2Fhappy-cat-happy-happy-cat.gif&f=1&nofb=1&ipt=7cb50ddb766a3e7487b16c9bb1ebc7c814d3e0449b654188039c1619df1bd78a') !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    padding-top: 22% !important;
+    padding-bottom: 22% !important;
+}
+/* B. NOTIFICATION CSS */
+.fa-shake {
+    animation-name: fa-shake;
+    animation-duration: 2s;
+    animation-iteration-count: 3;
+    animation-timing-function: 90s;
+}
+/* C. FULL SIDEBAR */
+#app > div.d-flex > aside {
+    top: 0px;
+    z-index: 1050;
+}
+/* D. Fix Sidebar */
+#app > div.d-flex > aside > div > div.text-center.p-1.m-2.mt-4 > small::before {
+    content: "PinNaCle " !important;
+    display: flex;
+    background-image: url(/img/pinnacle.png);
+    padding: var(--seqo-font-size-xs);
+    background-size: contain;
+    background-repeat: no-repeat;
+    color: transparent;
+    background-position: center;
+    margin-top: var(--bs-border-radius-xl);
+}

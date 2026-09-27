@@ -1436,7 +1436,7 @@ spinner-border,.spinner-grow {
     --bs-spinner-height: 2rem;
     --bs-spinner-vertical-align: -.125em;
     --bs-spinner-animation-speed: 2s;
-    --bs-spinner-animation-name: apple-pulse;
+    --bs-spinner-animation-name: apple-pulse !important;
     background-color: currentcolor;
     opacity: 1
 }
@@ -1479,71 +1479,73 @@ spinner-border,.spinner-grow {
 
 .screen-blocker {
     z-index: 0 !important;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 320px;
-    max-height: 16%;
-    max-width: 12%;
-    padding: 24px;
-    z-index: 1055;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 320px !important;
+    max-height: 16% !important;
+    max-width: 12% !important;
+    padding: 24px !important;
+    z-index: 1055 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-direction: column !important;
 }
 
 /* 2. Navbar */
 #app > nav > div > b {
-filter: blur(4px);
-opacity: 0;
+filter: blur(4px) !important;
+opacity: 0 !important;
 }
 
 #app > nav > div > b:hover {
-transition: 1s;
-filter: blur(0px);
-opacity: 1;
+transition: 1s !important;
+filter: blur(0px) !important;
+opacity: 1 !important;
 }
 
 /* 3. Toast */
 .bg-light {
-    color: var(--seqo-text-tertiary);
+    color: var(--seqo-text-tertiary) !important;
 }
 
 /* OTHERS */
 /* A. PENDING TASKS */
 .card.card-body.shadow-sm.text-muted.text-center.px-4.py-5.mb-4 {
     background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia.tenor.com%2FlCKwsD2OW1kAAAAi%2Fhappy-cat-happy-happy-cat.gif&f=1&nofb=1&ipt=7cb50ddb766a3e7487b16c9bb1ebc7c814d3e0449b654188039c1619df1bd78a') !important;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: cover !important;
     padding-top: 22% !important;
     padding-bottom: 22% !important;
 }
 /* B. NOTIFICATION CSS */
 .fa-shake {
-    animation-name: fa-shake;
-    animation-duration: 2s;
-    animation-iteration-count: 3;
-    animation-timing-function: 90s;
+    animation-name: fa-shake !important;
+    animation-duration: 2s !important;
+    animation-iteration-count: 3 !important;
+    animation-timing-function: 90s !important;
 }
 /* C. FULL SIDEBAR */
 #app > div.d-flex > aside {
-    top: 0px;
-    z-index: 1050;
+    top: 0px !important;
+    z-index: 1050 !important;
 }
 /* D. Fix Sidebar */
 #app > div.d-flex > aside > div > div.text-center.p-1.m-2.mt-4 > small::before {
     content: "PinNaCle " !important;
-    display: flex;
-    background-image: url(/img/pinnacle.png);
-    padding: var(--seqo-font-size-xs);
-    background-size: contain;
-    background-repeat: no-repeat;
-    color: transparent;
-    background-position: center;
-    margin-top: var(--bs-border-radius-xl);
+    display: flex !important;
+    background-image: url(/img/pinnacle.png) !important;
+    padding: var(--seqo-font-size-xs) !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    color: transparent !important;
+    background-position: center !important;
+    margin-top: var(--bs-border-radius-xl) !important;
 }
+
+#app > div.d-flex > aside
